@@ -96,12 +96,7 @@ MONGO_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/library_db
 VITE_API_URL=http://localhost:5000
 ```
 
----
 
-## Deployment
-
-- **GitHub:** [Add your GitHub link here]
-- **Render:** [Add your Render deployment link here]
 
 ---
 
