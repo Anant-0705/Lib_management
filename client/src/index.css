@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer components {
+  .field-row {
+    @apply flex justify-between items-center py-1.5 border-b border-gray-100 last:border-0;
+  }
+  .field-label {
+    @apply text-xs text-gray-400 uppercase tracking-wide font-medium;
+  }
+  .field-value {
+    @apply text-xs text-gray-700 font-medium text-right;
+  }
+}
