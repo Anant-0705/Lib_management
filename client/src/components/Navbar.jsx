@@ -1,9 +1,13 @@
-const Navbar = ({ activeTab, setActiveTab }) => {
+import { useAuth } from '../context/AuthContext';
+
+const Navbar = ({ activeTab, setActiveTab, isAdmin }) => {
+  const { user, logout } = useAuth();
+
   const tabs = [
-    { id: 'list', label: 'All Books' },
-    { id: 'add', label: 'Add Book' },
-    { id: 'search', label: 'Search' },
-  ];
+    { id: 'list', label: 'All Books', show: true },
+    { id: 'add', label: 'Add Book', show: isAdmin },
+    { id: 'search', label: 'Search', show: true },
+  ].filter((t) => t.show);
 
   return (
     <nav className="bg-slate-900 border-b border-slate-800">
@@ -23,7 +27,7 @@ const Navbar = ({ activeTab, setActiveTab }) => {
             </div>
           </div>
 
-          {/* Tabs */}
+          {/* Center Tabs */}
           <div className="flex">
             {tabs.map((tab) => (
               <button
@@ -38,6 +42,24 @@ const Navbar = ({ activeTab, setActiveTab }) => {
                 {tab.label}
               </button>
             ))}
+          </div>
+
+          {/* User Info + Logout */}
+          <div className="flex items-center gap-3">
+            <div className="text-right">
+              <p className="text-slate-200 text-xs font-medium leading-none">{user?.name}</p>
+              <span className={`text-xs mt-0.5 inline-block font-medium ${
+                isAdmin ? 'text-blue-400' : 'text-slate-400'
+              }`}>
+                {isAdmin ? 'Admin' : 'Member'}
+              </span>
+            </div>
+            <button
+              onClick={logout}
+              className="border border-slate-700 hover:border-slate-500 text-slate-400 hover:text-slate-200 text-xs px-3 py-1.5 rounded transition-colors duration-150"
+            >
+              Sign out
+            </button>
           </div>
         </div>
       </div>

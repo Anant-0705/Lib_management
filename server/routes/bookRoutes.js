@@ -7,15 +7,23 @@ const {
   updateBook,
   deleteBook,
   searchBooks,
+  borrowBook,
+  returnBook,
 } = require('../controllers/bookController');
+const { protect, adminOnly } = require('../middleware/authMiddleware');
 
-// Search route must come BEFORE /:id to avoid conflict
+// Public routes
 router.get('/search', searchBooks);
-
-router.post('/', addBook);
 router.get('/', getAllBooks);
 router.get('/:id', getBookById);
-router.put('/:id', updateBook);
-router.delete('/:id', deleteBook);
+
+// Member routes (must be logged in)
+router.put('/:id/borrow', protect, borrowBook);
+router.put('/:id/return', protect, returnBook);
+
+// Admin-only routes
+router.post('/', protect, adminOnly, addBook);
+router.put('/:id', protect, adminOnly, updateBook);
+router.delete('/:id', protect, adminOnly, deleteBook);
 
 module.exports = router;

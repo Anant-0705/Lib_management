@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 import { searchBooks, deleteBook } from '../services/bookService';
 import BookCard from './BookCard';
 
-const SearchBar = ({ onEdit }) => {
+const SearchBar = ({ onEdit, isAdmin }) => {
   const [searchType, setSearchType] = useState('title');
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
@@ -97,11 +97,12 @@ const SearchBar = ({ onEdit }) => {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {results.map((book) => (
-                <BookCard
+                  <BookCard
                   key={book._id}
                   book={book}
                   onEdit={onEdit}
                   onDelete={handleDelete}
+                  isAdmin={isAdmin}
                 />
               ))}
             </div>

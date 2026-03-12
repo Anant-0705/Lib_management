@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 import { getAllBooks, deleteBook } from '../services/bookService';
 import BookCard from './BookCard';
 
-const BookList = ({ onEdit, onRefresh }) => {
+const BookList = ({ onEdit, onRefresh, isAdmin }) => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -82,6 +82,7 @@ const BookList = ({ onEdit, onRefresh }) => {
               book={book}
               onEdit={onEdit}
               onDelete={handleDelete}
+              isAdmin={isAdmin}
             />
           ))}
         </div>

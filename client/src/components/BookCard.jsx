@@ -1,5 +1,37 @@
-const BookCard = ({ book, onEdit, onDelete }) => {
+import { useState } from 'react';
+import toast from 'react-hot-toast';
+import { borrowBook, returnBook } from '../services/bookService';
+
+const BookCard = ({ book: initialBook, onEdit, onDelete, isAdmin }) => {
+  const [book, setBook] = useState(initialBook);
+  const [actionLoading, setActionLoading] = useState(false);
   const isAvailable = book.status === 'Available';
+
+  const handleBorrow = async () => {
+    setActionLoading(true);
+    try {
+      const res = await borrowBook(book._id);
+      setBook(res.data.data);
+      toast.success('Book borrowed successfully');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to borrow');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleReturn = async () => {
+    setActionLoading(true);
+    try {
+      const res = await returnBook(book._id);
+      setBook(res.data.data);
+      toast.success('Book returned successfully');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to return');
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg hover:border-gray-300 hover:shadow-sm transition-all duration-200 flex flex-col">
@@ -65,18 +97,39 @@ const BookCard = ({ book, onEdit, onDelete }) => {
 
       {/* Actions */}
       <div className="px-5 pb-4 pt-2 flex gap-2">
-        <button
-          onClick={() => onEdit(book)}
-          className="flex-1 border border-gray-300 hover:border-blue-400 hover:text-blue-600 text-gray-600 text-xs font-medium py-2 rounded transition-colors duration-150"
-        >
-          Edit
-        </button>
-        <button
-          onClick={() => onDelete(book._id)}
-          className="flex-1 border border-gray-300 hover:border-red-400 hover:text-red-600 text-gray-600 text-xs font-medium py-2 rounded transition-colors duration-150"
-        >
-          Delete
-        </button>
+        {isAdmin ? (
+          <>
+            <button
+              onClick={() => onEdit(book)}
+              className="flex-1 border border-gray-300 hover:border-blue-400 hover:text-blue-600 text-gray-600 text-xs font-medium py-2 rounded transition-colors duration-150"
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => onDelete(book._id)}
+              className="flex-1 border border-gray-300 hover:border-red-400 hover:text-red-600 text-gray-600 text-xs font-medium py-2 rounded transition-colors duration-150"
+            >
+              Delete
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              onClick={handleBorrow}
+              disabled={!isAvailable || book.bookType === 'Reference' || actionLoading}
+              className="flex-1 border border-gray-300 hover:border-blue-400 hover:text-blue-600 text-gray-600 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-medium py-2 rounded transition-colors duration-150"
+            >
+              {actionLoading ? '...' : 'Borrow'}
+            </button>
+            <button
+              onClick={handleReturn}
+              disabled={book.availableCopies >= book.totalCopies || actionLoading}
+              className="flex-1 border border-gray-300 hover:border-green-500 hover:text-green-600 text-gray-600 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-medium py-2 rounded transition-colors duration-150"
+            >
+              {actionLoading ? '...' : 'Return'}
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

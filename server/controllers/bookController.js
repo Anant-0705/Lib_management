@@ -135,6 +135,53 @@ const searchBooks = async (req, res, next) => {
   }
 };
 
+// @desc    Borrow a book (member)
+// @route   PUT /books/:id/borrow
+const borrowBook = async (req, res, next) => {
+  try {
+    const book = await Book.findById(req.params.id);
+    if (!book) {
+      return res.status(404).json({ success: false, message: 'Book not found' });
+    }
+    if (book.availableCopies <= 0 || book.status === 'Checked Out') {
+      return res.status(400).json({ success: false, message: 'No copies available to borrow' });
+    }
+    if (book.bookType === 'Reference') {
+      return res.status(400).json({ success: false, message: 'Reference books cannot be borrowed' });
+    }
+
+    book.availableCopies -= 1;
+    if (book.availableCopies === 0) book.status = 'Checked Out';
+    await book.save();
+
+    res.status(200).json({ success: true, message: 'Book borrowed successfully', data: book });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// @desc    Return a book (member)
+// @route   PUT /books/:id/return
+const returnBook = async (req, res, next) => {
+  try {
+    const book = await Book.findById(req.params.id);
+    if (!book) {
+      return res.status(404).json({ success: false, message: 'Book not found' });
+    }
+    if (book.availableCopies >= book.totalCopies) {
+      return res.status(400).json({ success: false, message: 'All copies are already returned' });
+    }
+
+    book.availableCopies += 1;
+    if (book.availableCopies > 0) book.status = 'Available';
+    await book.save();
+
+    res.status(200).json({ success: true, message: 'Book returned successfully', data: book });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   addBook,
   getAllBooks,
@@ -142,4 +189,6 @@ module.exports = {
   updateBook,
   deleteBook,
   searchBooks,
+  borrowBook,
+  returnBook,
 };
