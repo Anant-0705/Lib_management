@@ -65,10 +65,14 @@ const getBookById = async (req, res, next) => {
 // @access  Public
 const updateBook = async (req, res, next) => {
   try {
-    const book = await Book.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const book = await Book.findByIdAndUpdate(
+      req.params.id,
+      { $set: req.body },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
     if (!book) {
       return res.status(404).json({
         success: false,
